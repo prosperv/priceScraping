@@ -1,10 +1,11 @@
 import json
+from simpleFetcher import *
 from bs4 import BeautifulSoup
 import re
 from nameParser import *
 
-jurl = "https://www.cars.com/shopping/results/?dealer_id=&fuel_slugs[]=plug_in_hybrid&keyword=&list_price_max=32000&list_price_min=&makes[]=&maximum_distance=250&mileage_max=&page_size=20&sort=distance&stock_type=all&year_max=&year_min=2016&zip=98087"
 
+jsonUrl = "https://www.cars.com/shopping/results/?dealer_id=&fuel_slugs[]=plug_in_hybrid&keyword=&list_price_max=32000&list_price_min=&makes[]=&maximum_distance=250&mileage_max=&page_size=20&sort=distance&stock_type=all&year_max=&year_min=2016&zip=98087"
 
 def getNextPage(soup):
     return None
@@ -29,8 +30,14 @@ def parse(soup):
             "city" : "",
             "state" : "WA",
             "vin" : car['vin'],
-            "link" : "https://www.cars.com/vehicledetail/{}".format(car['listing_id']),
+            "link" : f"https://www.cars.com/vehicledetail/{car['listing_id']}",
             "webhost" : "cars",
         }
         database.append(c)
     return database
+
+
+def getCars():
+    [isOk, soup] = getResponse(jsonUrl)
+    if isOk:
+        return parse(soup)

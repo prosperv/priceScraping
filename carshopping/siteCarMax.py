@@ -1,9 +1,10 @@
 import json
+from simpleFetcher import *
 from bs4 import BeautifulSoup
 import re
 from nameParser import *
 
-url = "https://www.carmax.com/cars/plug-in-hybrid?year=2016-2023&price=35000"
+jsonUrl = "https://www.carmax.com/cars/plug-in-hybrid?year=2016-2023&price=35000"
 
 
 def getNextPage(soup):
@@ -11,7 +12,7 @@ def getNextPage(soup):
 
 
 def parse(soup):
-    database = []
+    cars = []
     # parsing the soup
     # find script tag with json data
     constcarscript = soup.find_all("script", string=re.compile("const car")).pop().text
@@ -34,8 +35,13 @@ def parse(soup):
             "city" : car['storeName'],
             "state" : car['stateAbbreviation'],
             "vin" : car['vin'],
-            "link" : "https://www.carmax.com/car/{}".format(car['stockNumber']),
+            "link" : f"https://www.carmax.com/car/{car['stockNumber']}",
             "webhost" : "carmax",
         }
-        database.append(c)
-    return database
+        cars.append(c)
+    return cars
+
+def getCars():
+    [isOk, soup] = getResponse(jsonUrl)
+    if isOk:
+        return parse(soup)

@@ -1,29 +1,18 @@
-import requests
-from bs4 import BeautifulSoup
+
+
 from price_parser import Price
-import re
 import json
 import plotly.express as px
 
-import carMax
-import carshost
-import trueCar
+import siteCarMax as siteCarMax
+import siteCarsHost as siteCarsHost
+import siteTrueCar as siteTrueCar
 
 sites = [
-    carMax,
-    carshost,
-    trueCar
+    siteCarMax,
+    siteCarsHost,
+    siteTrueCar
 ]
-
-header = {"user-agent":"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/112.0.0.0 Safari/537.36"}
-def getResponse(url):
-    success = True
-    response = requests.get(url, headers=header)
-    if (response.status_code != 200):
-        print("Error got code [{}] with url: {}".format(response.status_code, url))
-        success = False
-    soup = BeautifulSoup(response.text, 'html.parser')
-    return [success, soup]
 
 
 def saveHtml(soup, fileName):
@@ -34,10 +23,6 @@ def dumpJson(jsonData, fileName):
     with open(fileName,'w') as f:
         json.dump(jsonData, f, indent=2)
 
-def getModelName(mangledName):
-    for filter in carModelNameFilter:
-        mangledName = mangledName.replace(filter, '')
-    return mangledName.rstrip()
 
 car_header = [
     "make",
@@ -70,21 +55,14 @@ def getSubdata(keyValueList, cars):
 def getlistOfCarsModel(cars):
     setData = set()
     for car in cars:
-        setData.add("{} {}".format(car['make'], car['model']))
+        setData.add(f"{car['make']} {car['model']}")
     return setData
-
-
 
 
 database = []
 for site in sites:
-    url = site.url
-    while url != None:
-        print("Processing: {}".format(url))
-        [isOk, soup] = getResponse(url)
-        myCarDatabase = site.parse(soup)
-        database = database + myCarDatabase
-        url = site.getNextPage(soup)
+    database = database + site.getCars()
+    print(f"Got {len(database)} cars")
 
 
 #save to file as json
@@ -93,7 +71,7 @@ with open("cardatabase.json", 'w') as f:
 
 print("Cars found:")
 print(getlistOfCarsModel(database))
-print("Got {} cars".format(len(database)))
+print(f"Got {len(database)} cars")
 
 fig = px.scatter(database, x='milage', y='price', color='make', symbol='year',
                  title="layout.hovermode='closest' (the default)",

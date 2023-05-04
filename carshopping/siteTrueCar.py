@@ -1,9 +1,11 @@
 import json
+from simpleFetcher import *
 from bs4 import BeautifulSoup
 import re
 from nameParser import *
 
-url = "https://workingadvantage.truecar.com/used-cars-for-sale/listings/year-2016-max/body-hatchback/price-below-30000/fuel-plug-in-hybrid/location-lynnwood-wa/"
+
+jsonUrl = "https://workingadvantage.truecar.com/used-cars-for-sale/listings/year-2016-max/body-hatchback/price-below-30000/fuel-plug-in-hybrid/location-lynnwood-wa/"
 
 def getNextPage(soup):
     alink = soup.find_all('a',attrs={"data-qa":"Pagination-directional-next","aria-disabled":"false"})
@@ -23,7 +25,7 @@ def getListing(root_query):
         return root_query[theKey]['edges']
 
 def parse(soup):
-    database = []
+    cars = []
     jsonString = soup.find_all("script",id="__NEXT_DATA__").pop().text
     vehicleArray = json.loads(jsonString)
     root = vehicleArray['props']['pageProps']['__APOLLO_STATE__']
@@ -47,8 +49,19 @@ def parse(soup):
             "city" : "" if transferFee == None else transferFee['fromCity'],
             "state" : "" if transferFee == None else transferFee['fromState'],
             "vin" : vehicle['vin'],
-            "link" : "https://workingadvantage.truecar.com/used-cars-for-sale/listing/{}".format(vehicle['vin']),
+            "link" : f"https://workingadvantage.truecar.com/used-cars-for-sale/listing/{vehicle['vin']}",
             "webhost" : "trueCars" if parentDealership == None else parentDealership,
         }
-        database.append(c)
-    return database
+        cars.append(c)
+    return cars
+
+def getCars():
+    cars = []
+    url = jsonUrl
+    while url != None:
+        print(f"Processing: {url}")
+        [isOk, soup] = getResponse(url)
+        if isOk:
+            cars = cars + parse(soup)
+            url = getNextPage(soup)
+    return cars
