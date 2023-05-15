@@ -20,5 +20,4 @@ browser = webdriver.Chrome(service=webdriver_service, options=chrome_options)
 def getResponse(url):
     success = True
     browser.get(url)
-    soup = BeautifulSoup(browser.page_source, 'html.parser')
-    return [success, soup]
+    return [success, browser]

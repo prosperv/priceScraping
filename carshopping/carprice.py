@@ -7,11 +7,13 @@ import plotly.express as px
 import siteCarMax as siteCarMax
 import siteCarsHost as siteCarsHost
 import siteTrueCar as siteTrueCar
+import siteCraigslist
 
 sites = [
+    siteCraigslist,
     siteCarMax,
     siteCarsHost,
-    siteTrueCar
+    siteTrueCar,
 ]
 
 
