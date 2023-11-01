@@ -1,0 +1,6 @@
+{
+    "python.analysis.extraPaths": [
+        "./helper"
+    ],
+    "python.pythonPath": "/home/pvan/.local/share/virtualenvs/priceListing-qe46IStj"
+}

@@ -1,0 +1,3 @@
+Requirements
+Selenium package make use of chromium and a driver so you will to install them
+ `sudo apt install chromium-browser chromium-chromedriver`
