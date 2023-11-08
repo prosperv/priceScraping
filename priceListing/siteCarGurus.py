@@ -65,6 +65,11 @@ def parse(soup):
 def getCars():
     [isOk, browser] = seleniumFetcher.getResponse(url)
     siteHelper.saveString(browser.page_source, "cargurus.html")
-    listOf = browser.find_elements(By.TAG_NAME, "script")
-    return
+    elementMain:webdriver = browser.find_element(By.ID, "main")
+    listOf = elementMain.find_elements(By.TAG_NAME, "script")
+    
+    if isOk:
+        return parse(soup)
+    else:
+        return []
 

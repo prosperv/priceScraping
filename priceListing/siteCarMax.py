@@ -1,11 +1,14 @@
-import json
+import sys
+sys.path.insert(1, '../helper')
+
 from simpleFetcher import *
+import json
 from bs4 import BeautifulSoup
 import re
 from nameParser import *
 
-jsonUrl = "https://www.carmax.com/cars/plug-in-hybrid?year=2016-2023&price=35000"
-jsonUrl = "https://www.carmax.com/cars/plug-in-hybrid?year=2016-2023&price=35000"
+# jsonUrl = "https://www.carmax.com/cars/plug-in-hybrid?year=2016-2023&price=35000"
+jsonUrl = "https://www.carmax.com/cars/plug-in-hybrid/rear-view-camera/blind-spot-monitor/parking-sensors/hatchbacks/crossovers/toyota?price=29000&includenontransferables=true"
 
 
 def getNextPage(soup):
@@ -46,3 +49,5 @@ def getCars():
     [isOk, soup] = getResponse(jsonUrl)
     if isOk:
         return parse(soup)
+    else:
+        return []

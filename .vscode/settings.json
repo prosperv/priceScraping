@@ -2,5 +2,8 @@
     "python.analysis.extraPaths": [
         "./helper"
     ],
-    "python.pythonPath": "/home/pvan/.local/share/virtualenvs/priceListing-qe46IStj"
+    "[python]": {
+        "editor.defaultFormatter": "ms-python.autopep8"
+    },
+    "python.formatting.provider": "none",
 }

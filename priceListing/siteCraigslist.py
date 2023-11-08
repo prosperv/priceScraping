@@ -1,3 +1,6 @@
+import sys
+sys.path.insert(1, '../helper')
+
 import json
 from bs4 import BeautifulSoup
 import re
@@ -56,10 +59,10 @@ def parse(soup, urlList):
             url = searchUrl(thing[6][1], urlList)
             if len(url) > 0:
                 c = {
-                    "make": findMakerName(thing[8]),  # parse
-                    "model": findModelName(thing[8]),  # parse
+                    "make": findMakerName(thing[9]),  # parse
+                    "model": findModelName(thing[9]),  # parse
                     "trim": "",
-                    "year": findYear(thing[8], 2010),
+                    "year": findYear(thing[9], 2010),
                     "price": thing[3],
                     "milage": thing[7][1],
                     "shippingcost": 0,
@@ -77,16 +80,15 @@ def parse(soup, urlList):
     return database
 
 
-urlJson = "https://sapi.craigslist.org/web/v8/postings/search/full?batch=2-0-360-0-0&cc=US&lang=en&max_price={}&min_auto_year={}&postal={}&purveyor=owner&query={}&searchPath=cta&search_distance=80"
-urlHtml = "https://seattle.craigslist.org/search/cta?max_price={}&min_auto_year={}&postal={}&purveyor=owner&search_distance=80"
+urlJson = "https://sapi.craigslist.org/web/v8/postings/search/full?batch=2-0-360-0-0&cc=US&excats=5-2-13-22-2-24-1-4-19-1-1-1-1-1-1-3-6-10-1-1-1-2-2-8-1-1-1-1-1-4-1-7-1-1-1-1-7-1-1-1-1-1-1-1-1-1-1-1-1-1-1-1-1-1-1-1-1-1-1-1-1-1-1-1-1-1-1-1-1-1-1-1-1-1-1-1-1-1-1-1-1-1-1-2-1&lang=en&max_price=35000&min_price=10000&postal=98087&query=prius%20prime&searchPath=sss&search_distance=100"
+urlHtml = "https://seattle.craigslist.org/search/sss?excats=5-2-13-22-2-24-1-4-19-1-1-1-1-1-1-3-6-10-1-1-1-2-2-8-1-1-1-1-1-4-1-7-1-1-1-1-7-1-1-1-1-1-1-1-1-1-1-1-1-1-1-1-1-1-1-1-1-1-1-1-1-1-1-1-1-1-1-1-1-1-1-1-1-1-1-1-1-1-1-1-1-1-1-2-1&max_price=35000&min_price=10000&postal=98087&query=prius%20prime&search_distance=100#search=1~gallery~0~0"
 
 
-def getLinks(maxPrice, minAutoYear, postalSearch, queryString):
-    [isOk, browser] = seleniumFetcher.getResponse(
-        urlHtml.format(maxPrice, minAutoYear, postalSearch))
+def getLinks():
+    [isOk, browser] = seleniumFetcher.getResponse(urlHtml)
 
     searchBar = browser.find_element(By.TAG_NAME, "input")
-    searchBar.send_keys(queryString)
+    searchBar.send_keys()
     searchBar.send_keys(Keys.RETURN)
 
     urlList = []
@@ -95,8 +97,12 @@ def getLinks(maxPrice, minAutoYear, postalSearch, queryString):
         liList = browser.find_element(
             By.TAG_NAME, "ol").find_elements(By.TAG_NAME, "li")
         for car in liList:
-            urlList.append(car.find_element(
-                By.TAG_NAME, "a").get_attribute("href"))
+            try:
+                tagAlink = car.find_element(By.TAG_NAME, "a")
+                carLink = tagAlink.get_attribute("href")
+                urlList.append(carLink)
+            except selenium.common.exceptions.NoSuchElementException as e:
+                
         nextPage = browser.find_element(By.CLASS_NAME, "cl-next-page")
         if nextPage.get_attribute('class').find('disabled') < 0:
             nextPage.click()
@@ -114,10 +120,9 @@ def getCars():
     model = "prius prime"
     trim = "advance"
 
-    queryString = "(prius prime)|(chevy volt)|(chevrolet volt)|(hyundai ioniq)|(ford c max)|(kia niro)"
-
-    urlList = getLinks(maxPrice, minAutoYear, postalSearch, queryString)
-    [isOk, soup] = simpleFetcher.getResponse(
-        urlJson.format(maxPrice, minAutoYear, postalSearch, urllib.parse.quote(queryString)))
+    urlList = getLinks()
+    [isOk, soup] = simpleFetcher.getResponse(urlJson)
     if isOk:
         return parse(soup, urlList)
+    else:
+        return []

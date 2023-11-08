@@ -1,3 +1,6 @@
+import sys
+sys.path.insert(1, '../helper')
+
 import json
 from simpleFetcher import *
 from bs4 import BeautifulSoup
@@ -5,7 +8,7 @@ import re
 from nameParser import *
 
 
-jsonUrl = "https://workingadvantage.truecar.com/used-cars-for-sale/listings/year-2016-max/body-hatchback/price-below-30000/fuel-plug-in-hybrid/location-lynnwood-wa/"
+jsonUrl = "https://workingadvantage.truecar.com/used-cars-for-sale/listings/year-2016-max/body-hatchback/price-below-35000/fuel-plug-in-hybrid/location-lynnwood-wa/?keyFeature[]=Backup%20Camera&keyFeature[]=Blind%20Spot%20System&keyFeature[]=Parking%20Sensors&mileageHigh=100000"
 
 def getNextPage(soup):
     alink = soup.find_all('a',attrs={"data-qa":"Pagination-directional-next","aria-disabled":"false"})

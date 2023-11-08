@@ -1,3 +1,6 @@
+import sys
+sys.path.insert(1, '../helper')
+
 import json
 from simpleFetcher import *
 from bs4 import BeautifulSoup
@@ -6,7 +9,7 @@ from nameParser import *
 
 
 jsonUrl = "https://www.cars.com/shopping/results/?dealer_id=&fuel_slugs[]=plug_in_hybrid&keyword=&list_price_max=32000&list_price_min=&makes[]=&maximum_distance=250&mileage_max=&page_size=20&sort=distance&stock_type=all&year_max=&year_min=2016&zip=98087"
-
+jsonUrl = "https://www.cars.com/shopping/results/?dealer_id=&fuel_slugs[]=plug_in_hybrid&keyword=&list_price_max=32000&list_price_min=&makes[]=toyota&maximum_distance=250&mileage_max=&page_size=20&sort=distance&stock_type=all&year_max=&year_min=2016&zip=98087"
 def getNextPage(soup):
     return None
 
@@ -41,3 +44,5 @@ def getCars():
     [isOk, soup] = getResponse(jsonUrl)
     if isOk:
         return parse(soup)
+    else:
+        return []
